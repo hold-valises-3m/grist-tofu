@@ -18,13 +18,13 @@ variable "grist_ports" {
   type = object({
       http = number
       https = number
-    })
+  })
   description = "Where to expose the public http port for Grist to be accessible on."
 
-  default = object({
+  default = {
     http = 80
     https = 443
-  })
+  }
 }
 
 variable "grist_url" {
@@ -80,21 +80,22 @@ resource "digitalocean_app" "grist-dev" {
 
       git {
         repo_clone_url = "https://github.com/gristlabs/grist-omnibus"
+        branch = "main"
       }
 
-      build_command = <<EOF
-      mkdir -p /tmp/grist-test
-      docker run \
-        -p ${var.grist_ports.http}:${var.grist_ports.http} -p ${var.grist_ports.https}:${var.grist_ports.https} \
-        -e URL=${var.grist_url} \
-        -e HTTPS=${var.grist_https} \
-        -e TEAM=${var.grist_team} \
-        -e EMAIL=${var.grist_email} \
-        -e PASSWORD=${var.grist_password} \
-        -v /tmp/grist-test:/persist \
-        --name grist --rm \
-        -it gristlabs/grist-omnibus
-        EOF
+      // build_command = <<EOF
+      // mkdir -p /tmp/grist-test
+      // docker run \
+      //   -p ${var.grist_ports.http}:${var.grist_ports.http} -p ${var.grist_ports.https}:${var.grist_ports.https} \
+      //   -e URL=${var.grist_url} \
+      //   -e HTTPS=${var.grist_https} \
+      //   -e TEAM=${var.grist_team} \
+      //   -e EMAIL=${var.grist_email} \
+      //   -e PASSWORD=${var.grist_password} \
+      //   -v /tmp/grist-test:/persist \
+      //   --name grist --rm \
+      //   -it gristlabs/grist-omnibus
+      //   EOF
     }
   }
 }
